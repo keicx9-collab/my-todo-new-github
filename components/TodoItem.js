@@ -12,9 +12,16 @@ export default function TodoItem({ todo, onRefresh }) {
   const handleUpdate = async () => {
     if (!title.trim()) return;
     setLoading(true);
-    await updateTodo(todo.id, title.trim());
+    await updateTodo(todo.id, { title: title.trim() });
     setLoading(false);
     setEditing(false);
+    onRefresh();
+  };
+
+  const handleToggleCompleted = async () => {
+    setLoading(true);
+    await updateTodo(todo.id, { completed: !todo.completed });
+    setLoading(false);
     onRefresh();
   };
 
@@ -44,7 +51,21 @@ export default function TodoItem({ todo, onRefresh }) {
         </>
       ) : (
         <>
-          {todo.title}
+          <input
+            type="checkbox"
+            checked={!!todo.completed}
+            onChange={handleToggleCompleted}
+            disabled={loading}
+          />
+          <span
+            style={{
+              marginLeft: '0.5rem',
+              textDecoration: todo.completed ? 'line-through' : 'none',
+              opacity: todo.completed ? 0.7 : 1,
+            }}
+          >
+            {todo.title}
+          </span>
           <button onClick={() => setEditing(true)} style={{ marginLeft: '0.5rem' }}>
             編集
           </button>
